@@ -25,7 +25,7 @@ char_to_nibble(char c)
 	return 255;
 }
 
-static uint8_t
+uint8_t
 *hex_to_bytes(char *hex_str)
 {
 	int i;
@@ -47,17 +47,49 @@ static uint8_t
 uint8_t
 *bytes_to_base64(char *byte_str)
 {
-	int i;
+	int i = 0;
 	uint8_t *base64;
-	size_t encoded_len, decoded_len;
+	uint32_t group = 0;
+	size_t decoded_len, encoded_len;
 
 	decoded_len = strlen(byte_str);
 	encoded_len = get_encoded_length(decoded_len);
-	base64 = malloc(encoded_len + 1);
 
+	base64 = malloc(encoded_len + 1);
+	
+	size_t counter = 0;
 	for (i = 0; i < decoded_len; i += 3) {
+		if (i < decoded_len)
+			group |= byte_str[i] << 16;
+		if ((i + 1) < decoded_len)
+			group |= byte_str[i + 1] << 8;
+		if ((i + 2) < decoded_len)
+			group |= byte_str[i + 2];
 		
+		base64[counter++] = base64_alphabet[group >> 18 & 63];
+		base64[counter++] = base64_alphabet[group >> 12 & 63];
+		base64[counter++] = base64_alphabet[group >> 6 & 63];
+		base64[counter++] = base64_alphabet[group >> 0 & 63];
+
+		group = 0;
 	}
 
+	/* This function does not handle PAD characters just yet. */
+	base64[encoded_len] = 0;
+
+	return base64;
+}
+
+uint8_t
+*hex_to_base64(char *hex_str)
+{
+	uint8_t *bytes;
+	uint8_t *base64;
+
+	bytes = hex_to_bytes(hex_str);
+	base64 = bytes_to_base64((char *) bytes);
+
+	free(bytes);
+	
 	return base64;
 }
