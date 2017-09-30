@@ -1,4 +1,9 @@
 # This repository contains solutions to problems that have been composed and
-# posted on the Cryptopals website <https://cryptopals.com/>.
+# posted on the Cryptopals website <https://cryptopals.com/>. These solutions
+# are my own implementations and there may possibly be more optimized solutions
+# for some of these problems out there. Additionally, the software contained
+# within this repository may contain bugs, so if you do manage to spot any bugs,
+# please ensure to either submit a pull request with the relevant fixes or
+# contact me directly via email.
 #
-# Author: Matthew Bobrowski <mbobrowski@mbobrowski.org>
+# Author: Matthew Bobrowski <mbobrowski@mbobrowski.org, mbobrowski@au1.ibm.com>

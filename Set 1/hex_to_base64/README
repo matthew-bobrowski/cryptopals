@@ -1,0 +1,10 @@
+# Source code contained within this directory has been developed to solve the
+# problem listed here: http://cryptopals.com/sets/1/challenges/1. In order to
+# compile and run the program perform the actions stated below:
+#
+# gcc -c main.c
+# gcc -c hex_to_base64.c
+# gcc hex_to_base64.o main.o
+#
+# Run the code:
+# ./a.out "hex_string_to_be_encoded"
