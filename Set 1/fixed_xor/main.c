@@ -17,7 +17,7 @@ char_to_nibble(char c)
 	return 225;
 }
 
-uint8_t
+static uint8_t
 *hex_to_bytes(char *hex)
 {
 	size_t i;
@@ -31,34 +31,46 @@ uint8_t
 		p += 2;
 	}
 
-	bytes[length] = 0;
+	bytes[length + 1] = '\0';
 
 	return bytes;
 }
 
-uint8_t
-*xor(char *hex_a, char *hex_b)
+static void
+print(uint8_t *buffer)
 {
-	// This function is still not completed. Further work needs to be performed
-	size_t i, a_len, b_len, length;
-	uint8_t *a, *b, *xor;
+	if (buffer == NULL) return;
 
-	a = hex_to_bytes(hex_a);
-	b = hex_to_bytes(hex_b);
+	for (size_t i = 0, length = strlen((char *) buffer); i < length; i++) {
+		printf("%02x", buffer[i]);
+	}
+	printf("\n");
+}
 
-	a_len = strlen(a);
-	b_len = strlen(b);
+static uint8_t
+*xor(char **input)
+{
+	size_t length, a_len, b_len;
+	uint8_t *xor, *a, *b;
 
-	length = ((a_len + b_len) / 2);
+	a = hex_to_bytes(input[1]);
+	b = hex_to_bytes(input[2]);
+
+	size_t a_length = strlen(input[1]) / 2;
+	size_t b_length = strlen(input[2]) / 2;
+
+	length = ((a_length + b_length) / 2);
+
 	xor = malloc(length + 1);
 
-	if (xor == NULL) return NULL;
-
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		xor[i] = a[i] ^ b[i];
 	}
 
-	xor[length] = 0;
+	xor[length] = '\0';
+
+	free(a);
+	free(b);
 
 	return xor;
 }
@@ -66,7 +78,7 @@ uint8_t
 int
 main(int argc, char **argv)
 {
-	uint8_t *fixed_xor;
+	uint8_t *result = NULL;
 
 	if (argc != 3) {
 		printf("Invalid number of arguments passed to the program. " \
@@ -74,28 +86,14 @@ main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	// argv[1] and argv[2] should both be hexadecimal encoded. Basic check performed on length of the two buffers provided.
-	size_t a_length = strlen(argv[1]);
-	size_t b_length = strlen(argv[2]);
+	result = xor(argv);
 
-	if ((a_length % 2 != 0) || (b_length % 2 != 0)) {
-		printf("Invalid hexadecimal string provided to the program. " \
-			"Terminating program\n");
+	if (result == NULL)
 		exit(EXIT_FAILURE);
-	}
 
-	// check whether the two buffers provided are of equal length. If unequal terminate program.
-	if (a_length != b_length) {
-		printf("Buffers provided to the program must be of equal length. Terminating program.\n");
-		exit(EXIT_FAILURE);
-	}
+	print(result);
 
-	fixed_xor = xor(argv[1], argv[2]);
-
-	for (size_t i = 0, length = strlen(fixed_xor); i < length; i++) {
-		printf("%" PRIxLEAST8, (fixed_xor[i] & 0xFF));
-	}
-	printf("\n");
+	free(result);
 
 	exit(EXIT_SUCCESS);
 }
